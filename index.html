@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="app.js"></script>
+		<style>
+			body {
+				position: relative;
+			}
+			.container {
+				position: absolute;
+				top: 20px;
+				left: 20px;
+				background-color: #cce6ff;
+				border: 1px solid #0084ff;
+				width: 200px;
+				height: 100px;
+				box-sizing: border-box;
+			}
+
+			.place {
+				position: absolute;
+				border: 1px solid #eee;
+				width: 200px;
+				height: 100px;
+				box-sizing: border-box;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="place" style="top: 20px; left: 20px"></div>
+		<div class="place" style="top: 20px; left: 220px"></div>
+		<div class="place" style="top: 20px; left: 420px"></div>
+		<div class="place" style="top: 120px; left: 20px"></div>
+		<div class="place" style="top: 120px; left: 220px"></div>
+		<div class="place" style="top: 120px; left: 420px"></div>
+		<div class="place" style="top: 220px; left: 20px"></div>
+		<div class="place" style="top: 220px; left: 220px"></div>
+		<div class="place" style="top: 220px; left: 420px"></div>
+		<div class="container" id="item"></div>
+	</body>
+</html>
