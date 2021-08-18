@@ -1,88 +1,107 @@
-(function($){
+const placeColor = "#eee";
+const placeHighlightedColor = "#aaa";
+const item = document.querySelector("#item");
 
-	var placeColor = '#eee';
-	var placeHighlightedColor = '#aaa';
+const places = Array.from(document.querySelectorAll(".place"));
 
-	$(function() {
-	
-		var dragging = false;
-		var x;
-		var y;
-		var item = $("#item");
-		var itemOriginalX;
-		var itemOriginalY;
-		var places = $(".place");
+let dragging = false;
+let x;
+let y;
+let itemOriginalX;
+let itemOriginalY;
 
-		function getCurrentPlace(mx, my) {
-			var index = 0;
-			places.each(function(ind, value) {
-				var place = $(this);
-				var placeX1 = parseInt(place.css('left'));
-				var placeY1 = parseInt(place.css('top'));
-				var placeX2 = placeX1 + parseInt(place.css('width'));
-				var placeY2 = placeY1 + parseInt(place.css('height'));
+updateInlineStyles();
 
-				if (mx >= placeX1 && mx <= placeX2 && my >= placeY1 && my <= placeY2 ) {
-					index = ind;
-					return false;
-				}
-			});
-			return index;
-		}
+function updateInlineStyles() {
+  item.style.top = getComputedStyle(item).top;
+  item.style.left = getComputedStyle(item).left;
 
-		function highlightPlace(placeNo) {
-			places.css('border-color', placeColor);
-			$(places[placeNo]).css('border-color', placeHighlightedColor);
-		}
+  places.forEach((place) => {
+    const { top, left, width, height } = getComputedStyle(place);
+    place.style.width = width;
+    place.style.height = height;
+    place.style.top = top;
+    place.style.left = left;
+  });
+}
 
-		function getPlaceRect(placeNo) {
-			var place = $(places[placeNo]);
-			return { 
-				left: parseInt(place.css('left')),
-				top: parseInt(place.css('top')),
-				width: parseInt(place.css('width')),
-				height: parseInt(place.css('height'))
-			};
-		}
+function getCurrentPlace(mx, my) {
+  const index = places.findIndex((place) => {
+    const placeX1 = parseInt(place.style.left);
+    const placeY1 = parseInt(place.style.top);
+    const placeX2 = placeX1 + parseInt(place.style.width);
+    const placeY2 = placeY1 + parseInt(place.style.height);
 
-		item.mousedown(function(e) {
-			dragging = true;
-			x = e.originalEvent.clientX;
-			y = e.originalEvent.clientY;
-			itemOriginalX = parseInt(item.css('left'));
-			itemOriginalY = parseInt(item.css('top'));
-		});
+    if (mx >= placeX1 && mx <= placeX2 && my >= placeY1 && my <= placeY2) {
+      return true;
+    }
 
-		item.mouseup(function(e) {
-			dragging = false;
+    return false;
+  });
 
-			var rect = getPlaceRect(getCurrentPlace(x, y));
+  return index === -1 ? 0 : index;
+}
 
-			item.animate({
-				left: rect.left + "px",
-				top: rect.top + "px"
-			}, 300);
-		});
+function highlightPlace(placeNo) {
+  places.forEach((place) => (place.style["border-color"] = placeColor));
+  places[placeNo].style["border-color"] = placeHighlightedColor;
+}
 
-		item.mousemove(function(e) {
-			if (dragging) {
-				dX = e.originalEvent.clientX - x;
-				dY = e.originalEvent.clientY - y;
-				x = e.originalEvent.clientX;
-				y = e.originalEvent.clientY;
+function getPlaceRect(placeNo) {
+  const place = places[placeNo];
+  return {
+    left: parseInt(place.style.left),
+    top: parseInt(place.style.top),
+    width: parseInt(place.style.width),
+    height: parseInt(place.style.height),
+  };
+}
 
-				var itemX = parseInt(item.css('left')) + dX;
-				var itemY = parseInt(item.css('top')) + dY;
+item.onmousedown = (e) => {
+  console.log(item.style.left);
+  dragging = true;
+  x = e.clientX;
+  y = e.clientY;
+  itemOriginalX = parseInt(item.style.left);
+  itemOriginalY = parseInt(item.style.top);
+};
 
-				item.css({
-					left: itemX + "px",
-					top: itemY + "px"
-				});
+item.onmouseup = (e) => {
+  dragging = false;
 
-				highlightPlace(getCurrentPlace(x, y));
-			}
-		});		
+  const rect = getPlaceRect(getCurrentPlace(x, y));
 
-	});
+  item.style.left = rect.left + "px";
+  item.style.top = rect.top + "px";
 
-})(jQuery);
+  // TODO: check this out
+  //
+  // const animation = item.animate(
+  //   [
+  //     {
+  //       left: rect.left + "px",
+  //       top: rect.top + "px",
+  //     },
+  //   ],
+  //   { duration: 300, fill: "forwards" }
+  // );
+
+  // animation.onfinish = () => console.log(item.style.left);
+};
+
+item.onmousemove = (e) => {
+  if (dragging) {
+    dX = e.clientX - x;
+    dY = e.clientY - y;
+    x = e.clientX;
+    y = e.clientY;
+
+    const itemX = parseInt(item.style.left) + dX;
+    const itemY = parseInt(item.style.top) + dY;
+
+    item.style.left = itemX + "px";
+    item.style.top = itemY + "px";
+
+    highlightPlace(getCurrentPlace(x, y));
+  }
+};

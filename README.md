@@ -1,2 +1,3 @@
 # dragndrop
-jQuery drag-and-drop
+
+HTML drag-and-drop
